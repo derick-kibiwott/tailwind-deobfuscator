@@ -1,11 +1,11 @@
 <div align="center">
 
-# Tailwindify
+# Tailwind-deobfuscator
 
 ### Select any element. Get Tailwind CSS instantly.
 
 <p align="center">
-  Tailwindify is a Chrome extension that lets you inspect any section of a webpage and instantly generate clean Tailwind CSS code — even on sites using obfuscated, hashed, minified, CSS Modules, or CSS-in-JS class names.
+  Tailwind-deobfuscator is a Chrome extension that lets you inspect any section of a webpage and instantly generate clean Tailwind CSS code — even on sites using obfuscated, hashed, minified, CSS Modules, or CSS-in-JS class names.
 </p>
 
 <p align="center">
@@ -41,9 +41,9 @@
 ## 🧠 How It Works
 
 1. Open any website
-2. Launch Tailwindify
+2. Launch Tailwind-deobfuscator
 3. Select an element or section
-4. Tailwindify analyzes computed styles
+4. Tailwind-deobfuscator analyzes computed styles
 5. Instantly receive clean Tailwind CSS output
 6. Copy and use it in your project
 
@@ -52,7 +52,7 @@
 ## 🏗️ Monorepo Structure
 
 ```txt
-tailwindify
+tailwind-deobfuscator
 │
 ├─ apps
 │  │
@@ -100,7 +100,7 @@ tailwindify
 
 ### Why a Monorepo?
 
-Tailwindify uses a modern monorepo architecture to keep the extension, dashboard, and shared UI ecosystem fully synchronized.
+Tailwind-deobfuscator uses a modern monorepo architecture to keep the extension, dashboard, and shared UI ecosystem fully synchronized.
 
 This allows us to:
 
@@ -124,8 +124,8 @@ Built with:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/tailwindify.git
-cd tailwindify
+git clone https://github.com/derick-kibiwott/tailwind-deobfuscator
+cd tailwind-deobfuscator
 ```
 
 ### Install Dependencies

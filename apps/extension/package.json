@@ -1,0 +1,39 @@
+{
+  "name": "@tailwind-deobfuscator/extension",
+  "displayName": "Tailwind Deobfuscator",
+  "version": "0.1.0",
+  "description": "Tailwind Deobfuscator a Chrome extension that lets you inspect and select any section of a webpage, then instantly generate the equivalent Tailwind CSS code — even when the site uses obfuscated, hashed, or minified class names.",
+  "author": "Derick Kibiwott",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "@tailwind-deobfuscator/ui": "workspace:*",
+    "clsx": "^2.1.1",
+    "plasmo": "0.90.5",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "shadcn": "^4.8.1",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@types/chrome": "0.0.258",
+    "@types/node": "20.11.5",
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "prettier": "^3.7.4",
+    "tailwindcss": "^3.4.19",
+    "typescript": "5.9.2"
+  },
+  "manifest": {
+    "host_permissions": [
+      "http://*/*",
+      "https://*/*"
+    ]
+  }
+}

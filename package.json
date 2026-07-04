@@ -1,5 +1,5 @@
 {
-  "name": "tailwindify",
+  "name": "tailwind-deobfuscator",
   "private": true,
   "scripts": {
     "build": "turbo run build",
