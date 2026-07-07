@@ -1,11 +1,19 @@
-// /contents/inspector-sidebar.tsx
 import type { ToggleSidebarRequest } from "@/types/message"
+import { DomTree } from "@tailwind-deobfuscator/ui/components/inspector/dom-tree"
+import { RawStyles } from "@tailwind-deobfuscator/ui/components/inspector/raw-styles"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@tailwind-deobfuscator/ui/components/ui/accordion"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle
 } from "@tailwind-deobfuscator/ui/components/ui/sheet"
+import type { ExtractedData } from "@tailwind-deobfuscator/ui/types/inspector"
 import sidebarOverlayCssText from "data-text:./inspector-sidebar.css"
 import cssText from "data-text:@tailwind-deobfuscator/ui/styles/globals.css"
 import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
@@ -24,7 +32,6 @@ export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () =>
 export const getStyle = (): HTMLStyleElement => {
   const baseFontSize = 16
 
-  // 1. Process your core tailwind globals
   let transformed = cssText
     .replaceAll(":root", ":host(plasmo-csui)")
     .replaceAll(".dark", ':host(plasmo-csui[data-theme="dark"])')
@@ -34,17 +41,15 @@ export const getStyle = (): HTMLStyleElement => {
     )
 
   const style = document.createElement("style")
-  // 2. Append both the tailwind variables and your isolated structural CSS string styles together
   style.textContent = `${transformed}\n${sidebarOverlayCssText}`
   return style
 }
 
 export default function InspectorSidebar() {
   const [open, setOpen] = useState(false)
-  const [elementData, setElementData] = useState<any>(null)
-  const hostRef = useRef<HTMLElement | null>(null)
+  const [elementData, setElementData] = useState<ExtractedData | null>(null)
 
-  // Create a React container reference hook to look up the shadow wrapper dynamically
+  const hostRef = useRef<HTMLElement | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
 
@@ -53,11 +58,9 @@ export default function InspectorSidebar() {
   }, [])
 
   useEffect(() => {
-    // Dynamically query the internal Shadow DOM parent container tree context safely without breaking web mode
     if (open && containerRef.current) {
       const rootNode = containerRef.current.getRootNode()
       if (rootNode instanceof ShadowRoot) {
-        // Find Plasmo's built-in target node using the id referenced in your inspector-sidebar.css file
         const internalTarget = rootNode.getElementById(
           "plasmo-shadow-container"
         )
@@ -66,78 +69,55 @@ export default function InspectorSidebar() {
     }
   }, [open])
 
-  // Listens for message broadcasts arriving from the background page relay script
-  useMessage<ToggleSidebarRequest, any>((req, res) => {
-    if (req.name === "inspector-ui-update") {
-      const payload = req.body
+  useMessage<ToggleSidebarRequest, any>((req, _res) => {
+    if (req.name !== "inspector-ui-update") return
 
-      if (payload.action === "show") {
-        setElementData(payload.data)
-        setOpen(true)
+    const { action, data } = req.body
 
-        if (hostRef.current) {
-          hostRef.current.setAttribute(
-            "data-theme",
-            payload.data?.theme === "dark" ? "dark" : "light"
-          )
-        }
-      } else if (payload.action === "hide") {
-        setOpen(false)
-      }
+    if (action === "show") {
+      setElementData(data as ExtractedData)
+      setOpen(true)
+      hostRef.current?.setAttribute(
+        "data-theme",
+        data?.theme === "dark" ? "dark" : "light"
+      )
+    } else if (action === "hide") {
+      setOpen(false)
     }
   })
 
+  const styles = elementData?.rawStyles ?? []
   return (
-    /* We map contents styling directly so the element wrappers inherit tailwind typography settings */
     <div
       ref={containerRef}
       className="contents text-foreground bg-background font-sans">
       <Sheet open={open} onOpenChange={setOpen}>
-        {/* Pass your container ref here to anchor Base UI safely into Plasmo's Shadow Root workspace */}
         <SheetContent
           container={portalTarget}
-          className="w-4/5 sm:w-3/4 md:w-2/3 lg:w-2/5 gap-0">
-          <SheetHeader className="sticky top-0 border-b border-border">
+          className="w-4/5 sm:w-3/4 md:w-2/3 lg:w-2/5 gap-0 flex flex-col">
+          <SheetHeader className="sticky top-0 border-b border-border bg-background z-10">
             <SheetTitle>Element Inspector</SheetTitle>
           </SheetHeader>
 
-          <div className="overflow-y-auto">
-            <div className="mt-6 space-y-4 px-6">
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  Tag
-                </h3>
-                <code className="block bg-muted px-2 py-1 rounded text-sm">
-                  {elementData?.tagName || "div"}
-                </code>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  Classes
-                </h3>
-                <div className="flex flex-wrap gap-1">
-                  {(
-                    elementData?.classList || ["flex", "items-center", "gap-2"]
-                  ).map((c: string) => (
-                    <span
-                      key={c}
-                      className="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-mono">
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  Computed Styles
-                </h3>
-                <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">
-                  {elementData?.computedStylesCSS || "display: flex;\n..."}
-                </pre>
-              </div>
-            </div>
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <Accordion>
+              <AccordionItem value="dom-tree">
+                <AccordionTrigger>DOM Tree</AccordionTrigger>
+                <AccordionContent>
+                  <div className="bg-muted rounded-md border border-border p-3 font-mono text-xs overflow-x-auto">
+                    <DomTree tree={elementData?.tree ?? null} />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="raw-styles">
+                <AccordionTrigger>
+                  Raw Styles ({styles.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  <RawStyles styles={styles} />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </SheetContent>
       </Sheet>

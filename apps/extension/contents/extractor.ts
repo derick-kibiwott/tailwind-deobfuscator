@@ -1,123 +1,113 @@
-export interface ExtractedElementData {
+export interface ElementNode {
   tagName: string
   id: string | null
   classList: string[]
-  inlineStyles: string
-  computedStyles: Record<string, string>
-  computedStylesCSS: string
-  matchedRules: Array<{
-    selector: string
-    cssText: string
-    source: string
-  }>
-  dimensions: {
-    width: number
-    height: number
-    top: number
-    left: number
-  }
+  children: ElementNode[]
+}
+
+export interface StyleRule {
+  selector: string
+  cssText: string
+}
+
+export interface ExtractedData {
+  tree: ElementNode
+  rawStyles: StyleRule[]
 }
 
 /**
- * Extract all relevant data for a given DOM element.
+ * Extract the DOM tree (element + children) and raw CSS rules
+ * for every class found in that tree.
  */
-export function extractElementData(element: HTMLElement): ExtractedElementData {
-  const computed = window.getComputedStyle(element)
-  const computedStyles: Record<string, string> = {}
-  const nonDefaultStyles: Record<string, string> = {}
+export function extractElementData(element: HTMLElement): ExtractedData {
+  const tree = buildTree(element)
+  const classNames = collectClasses(tree)
+  const rawStyles = extractRawStyles(classNames)
 
-  // Iterate all computed properties
-  for (let i = 0; i < computed.length; i++) {
-    const prop = computed[i]
-    const value = computed.getPropertyValue(prop)
-    computedStyles[prop] = value
+  return { tree, rawStyles }
+}
 
-    // Filter out empty/initial values to reduce noise
-    if (
-      value &&
-      value !== "initial" &&
-      value !== "none" &&
-      value !== "normal" &&
-      value !== "auto"
-    ) {
-      nonDefaultStyles[prop] = value
-    }
-  }
-
-  // Get matched CSS rules from stylesheets
-  const matchedRules: ExtractedElementData["matchedRules"] = []
-
-  for (const sheet of document.styleSheets) {
-    try {
-      const rules = sheet.cssRules || sheet.rules
-      if (!rules) continue
-
-      for (const rule of rules) {
-        if (rule instanceof CSSStyleRule) {
-          const selectors = rule.selectorText.split(",")
-          for (const selector of selectors) {
-            try {
-              if (element.matches(selector.trim())) {
-                matchedRules.push({
-                  selector: rule.selectorText,
-                  cssText: rule.cssText,
-                  source: sheet.href || "inline"
-                })
-                break
-              }
-            } catch {
-              // Invalid selector, skip
-            }
-          }
-        }
-      }
-    } catch {
-      // Cross-origin stylesheet — can't read cssRules
-      if (sheet.href) {
-        matchedRules.push({
-          selector: "N/A",
-          cssText: `/* Cross-origin stylesheet: ${sheet.href} */`,
-          source: sheet.href
-        })
-      }
-    }
-  }
-
-  const rect = element.getBoundingClientRect()
-
-  return {
+/** Recursively build a lightweight tree of the element and its descendants. */
+function buildTree(element: HTMLElement): ElementNode {
+  const node: ElementNode = {
     tagName: element.tagName.toLowerCase(),
     id: element.id || null,
     classList: Array.from(element.classList),
-    inlineStyles: element.style.cssText,
-    computedStyles: nonDefaultStyles,
-    computedStylesCSS: formatComputedStyles(element, nonDefaultStyles),
-    matchedRules,
-    dimensions: {
-      width: rect.width,
-      height: rect.height,
-      top: rect.top + window.scrollY,
-      left: rect.left + window.scrollX
+    children: []
+  }
+
+  for (const child of element.children) {
+    if (child instanceof HTMLElement) {
+      node.children.push(buildTree(child))
     }
   }
+
+  return node
 }
 
-/**
- * Format computed styles as a raw CSS block.
- */
-function formatComputedStyles(
-  element: HTMLElement,
-  styles: Record<string, string>
-): string {
-  const selector = element.id
-    ? `#${element.id}`
-    : element.classList.length > 0
-      ? `.${Array.from(element.classList).join(".")}`
-      : element.tagName.toLowerCase()
+/** Collect every unique class name used anywhere in the tree. */
+function collectClasses(node: ElementNode): Set<string> {
+  const classes = new Set<string>()
+  for (const c of node.classList) classes.add(c)
+  for (const child of node.children) {
+    for (const c of collectClasses(child)) classes.add(c)
+  }
+  return classes
+}
 
-  const declarations = Object.entries(styles)
-    .map(([prop, val]) => `  ${prop}: ${val};`)
-    .join("\n")
+/** Pull raw CSS rules from all stylesheets whose selectors reference any of the collected classes. */
+function extractRawStyles(classNames: Set<string>): StyleRule[] {
+  const rules: StyleRule[] = []
+  const seen = new Set<string>()
 
-  return `${selector} {\n${declarations}\n}`
+  for (const sheet of document.styleSheets) {
+    try {
+      const cssRules = sheet.cssRules || sheet.rules
+      if (!cssRules) continue
+      extractFromRuleList(cssRules, classNames, rules, seen)
+    } catch {
+      // Cross-origin stylesheet — can't read cssRules
+      if (sheet.href) {
+        const cssText = `/* Cross-origin stylesheet: ${sheet.href} */`
+        if (!seen.has(cssText)) {
+          seen.add(cssText)
+          rules.push({ selector: "N/A", cssText })
+        }
+      }
+    }
+  }
+
+  return rules
+}
+
+/** Recursively walk rule lists (including @media, @supports, etc.) to find matching class selectors. */
+function extractFromRuleList(
+  ruleList: CSSRuleList,
+  classNames: Set<string>,
+  out: StyleRule[],
+  seen: Set<string>
+): void {
+  for (const rule of ruleList) {
+    if (rule instanceof CSSStyleRule) {
+      for (const className of classNames) {
+        // Check if any selector in this rule references the class
+        if (rule.selectorText.includes(`.${className}`)) {
+          if (!seen.has(rule.cssText)) {
+            seen.add(rule.cssText)
+            out.push({
+              selector: rule.selectorText,
+              cssText: rule.cssText
+            })
+          }
+          break
+        }
+      }
+    } else if (
+      rule instanceof CSSMediaRule ||
+      rule instanceof CSSSupportsRule ||
+      rule instanceof CSSContainerRule
+    ) {
+      extractFromRuleList(rule.cssRules, classNames, out, seen)
+    }
+  }
 }
