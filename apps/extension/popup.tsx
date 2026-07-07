@@ -1,7 +1,7 @@
 import "react"
 import "./main.css"
 
-import { Button } from "@tailwind-deobfuscator/ui/components/button"
+import { Button } from "@tailwind-deobfuscator/ui/components/ui/button"
 import { useTheme } from "@tailwind-deobfuscator/ui/hooks/use-theme"
 import {
   BsGithub,
