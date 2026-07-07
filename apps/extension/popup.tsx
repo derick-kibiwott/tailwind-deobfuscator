@@ -1,5 +1,5 @@
 import "react"
-import "./main.css"
+import "@tailwind-deobfuscator/ui/styles/globals-built.css"
 
 import { Button } from "@tailwind-deobfuscator/ui/components/ui/button"
 import { useTheme } from "@tailwind-deobfuscator/ui/hooks/use-theme"
@@ -18,7 +18,7 @@ export default function Popup() {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <div className="w-[360px] bg-background text-foreground overflow-hidden shadow-2xl">
+    <div className="w-90 bg-background text-foreground overflow-hidden shadow-2xl">
       {/* Header with gradient */}
       <div className="bg-primary text-primary-foreground px-5 py-3">
         <div className="flex items-center justify-between gap-4 mb-2">

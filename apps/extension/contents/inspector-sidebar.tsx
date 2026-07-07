@@ -15,7 +15,7 @@ import {
 } from "@tailwind-deobfuscator/ui/components/ui/sheet"
 import type { ExtractedData } from "@tailwind-deobfuscator/ui/types/inspector"
 import sidebarOverlayCssText from "data-text:./inspector-sidebar.css"
-import cssText from "data-text:@tailwind-deobfuscator/ui/styles/globals.css"
+import cssText from "data-text:@tailwind-deobfuscator/ui/styles/globals-built.css"
 import type { PlasmoCSConfig, PlasmoGetOverlayAnchor } from "plasmo"
 import { useEffect, useRef, useState } from "react"
 

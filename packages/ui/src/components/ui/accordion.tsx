@@ -30,11 +30,11 @@ function AccordionTrigger({
   const baseClassName =
     "absolute opacity-0 scale-0 text-muted-foreground bg-secondary rounded-sm box-content p-2 pointer-events-none size-4 shrink-0 transition-all duration-300";
   return (
-    <AccordionPrimitive.Header className="flex">
+    <AccordionPrimitive.Header className="group/accordion-header flex">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-lg border border-transparent py-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
+          "group/accordion-trigger relative flex flex-1 items-center justify-between rounded-lg border border-transparent p-2.5 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground border-b",
           className,
         )}
         {...props}
@@ -45,14 +45,14 @@ function AccordionTrigger({
             aria-hidden="true"
             className={cn(
               baseClassName,
-              "group-[[data-state=closed]]/accordion-trigger:opacity-100 group-[[data-state=closed]]/accordion-trigger:scale-100",
+              "group-data-[closed]/accordion-header:opacity-100 group-data-[closed]/accordion-header:scale-100",
             )}
           />
           <Minus
             aria-hidden="true"
             className={cn(
               baseClassName,
-              "group-[[data-state=open]]/accordion-trigger:opacity-100 group-[[data-state=open]]/accordion-trigger:scale-100",
+              "group-data-[open]/accordion-header:opacity-100 group-data-[open]/accordion-header:scale-100",
             )}
           />
         </div>
