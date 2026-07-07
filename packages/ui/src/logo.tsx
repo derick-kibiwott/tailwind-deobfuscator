@@ -1,11 +1,11 @@
-// packages/ui/src/icon.tsx
+// packages/ui/src/logo.tsx
 
 import * as React from "react";
 import { cn } from "./lib/utils"; // or "@/lib/utils" depending on your alias
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {}
 
-export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
+export const Logo = React.forwardRef<SVGSVGElement, IconProps>(
   ({ className, width = 24, height = 24, ...props }, ref) => {
     return (
       <svg
@@ -75,8 +75,8 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
             y2="0.0967848"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#0C1625" />
-            <stop offset="1" stop-color="#283549" />
+            <stop stopColor="#0C1625" />
+            <stop offset="1" stopColor="#283549" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_63_948"
@@ -86,8 +86,8 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
             y2="6.7837"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#247CF2" />
-            <stop offset="1" stop-color="#47A1FB" />
+            <stop stopColor="#247CF2" />
+            <stop offset="1" stopColor="#47A1FB" />
           </linearGradient>
           <linearGradient
             id="paint2_linear_63_948"
@@ -97,8 +97,8 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
             y2="12.5383"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#ADBBCA" />
-            <stop offset="1" stop-color="#E4E5E7" />
+            <stop stopColor="#ADBBCA" />
+            <stop offset="1" stopColor="#E4E5E7" />
           </linearGradient>
           <linearGradient
             id="paint3_linear_63_948"
@@ -108,8 +108,8 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
             y2="18.1916"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#5C4ED8" />
-            <stop offset="1" stop-color="#AB86F4" />
+            <stop stopColor="#5C4ED8" />
+            <stop offset="1" stopColor="#AB86F4" />
           </linearGradient>
           <linearGradient
             id="paint4_linear_63_948"
@@ -119,8 +119,8 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
             y2="18.5412"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#4037B5" />
-            <stop offset="1" stop-color="#6956E0" />
+            <stop stopColor="#4037B5" />
+            <stop offset="1" stopColor="#6956E0" />
           </linearGradient>
         </defs>
       </svg>
@@ -128,4 +128,4 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(
   },
 );
 
-Icon.displayName = "Icon";
+Logo.displayName = "Icon";
