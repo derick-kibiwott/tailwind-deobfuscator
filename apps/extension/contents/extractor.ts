@@ -1,16 +1,16 @@
-export interface ElementNode {
+export type ElementNode = {
   tagName: string
   id: string | null
   classList: string[]
   children: ElementNode[]
 }
 
-export interface StyleRule {
+export type StyleRule = {
   selector: string
   cssText: string
 }
 
-export interface ExtractedData {
+export type ExtractedData = {
   tree: ElementNode
   rawStyles: StyleRule[]
 }
@@ -60,6 +60,10 @@ function extractRawStyles(classNames: Set<string>): StyleRule[] {
   const rules: StyleRule[] = []
   const seen = new Set<string>()
 
+  console.log(
+    "This are all the styles fetched by the extension -------->",
+    document.styleSheets
+  )
   for (const sheet of document.styleSheets) {
     try {
       const cssRules = sheet.cssRules || sheet.rules

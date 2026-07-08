@@ -13,8 +13,8 @@
     "lint": "eslint . --max-warnings 0",
     "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit",
-    "build:css": "tailwindcss -i ./styles/globals.css -o ./styles/globals-built.css --minify",
-    "dev:css": "@tailwindcss -i ./styles/globals.css -o ./styles/globals-built.css --watch"
+    "dev": "@tailwindcss -i ./styles/globals.css -o ./styles/globals-built.css --watch",
+    "build": "tailwindcss -i ./styles/globals.css -o ./styles/globals-built.css --minify"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -29,6 +29,7 @@
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@tailwindcss/cli": "^4.3.2",
+    "chrome-types": "^0.1.433",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.23.0",

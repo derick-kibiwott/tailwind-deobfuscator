@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/use-theme"
 import type { ToggleSidebarRequest } from "@/types/message"
 import { DomTree } from "@tailwind-deobfuscator/ui/components/inspector/dom-tree"
 import { RawStyles } from "@tailwind-deobfuscator/ui/components/inspector/raw-styles"
@@ -7,12 +8,15 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@tailwind-deobfuscator/ui/components/ui/accordion"
+import { Button } from "@tailwind-deobfuscator/ui/components/ui/button"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle
 } from "@tailwind-deobfuscator/ui/components/ui/sheet"
+import { Moon, Sun } from "@tailwind-deobfuscator/ui/icons"
 import type { ExtractedData } from "@tailwind-deobfuscator/ui/types/inspector"
 import sidebarOverlayCssText from "data-text:./inspector-sidebar.css"
 import cssText from "data-text:@tailwind-deobfuscator/ui/styles/globals-built.css"
@@ -52,10 +56,18 @@ export default function InspectorSidebar() {
   const hostRef = useRef<HTMLElement | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
+  const { theme, toggleTheme, setTheme } = useTheme("plasmo-csui")
 
   useEffect(() => {
     hostRef.current = document.querySelector("plasmo-csui")
   }, [])
+
+  // Apply theme when host element becomes available
+  useEffect(() => {
+    if (hostRef.current && theme) {
+      hostRef.current.setAttribute("data-theme", theme)
+    }
+  }, [hostRef.current, theme])
 
   useEffect(() => {
     if (open && containerRef.current) {
@@ -77,10 +89,11 @@ export default function InspectorSidebar() {
     if (action === "show") {
       setElementData(data as ExtractedData)
       setOpen(true)
-      hostRef.current?.setAttribute(
-        "data-theme",
-        data?.theme === "dark" ? "dark" : "light"
-      )
+
+      if (!theme) {
+        const pageTheme = data?.theme === "dark" ? "dark" : "light"
+        setTheme(pageTheme)
+      }
     } else if (action === "hide") {
       setOpen(false)
     }
@@ -95,8 +108,25 @@ export default function InspectorSidebar() {
         <SheetContent
           container={portalTarget}
           className="w-4/5 sm:w-3/4 md:w-2/3 lg:w-2/5 gap-0 flex flex-col">
-          <SheetHeader className="sticky top-0 border-b border-border bg-background z-10">
-            <SheetTitle>Element Inspector</SheetTitle>
+          <SheetHeader className="sticky flex-row gap-6 items-center justify-between top-0 border-b border-border bg-background z-10">
+            <div className="flex flex-col gap-0 5">
+              <SheetTitle>Element Inspector</SheetTitle>
+              <SheetDescription>
+                Inspect DOM structure and computed styles
+              </SheetDescription>
+            </div>
+            {/* Button to switch between light and dark mode */}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Toggle theme">
+              {theme === "dark" ? (
+                <Sun className="size-4" />
+              ) : (
+                <Moon className="size-4" />
+              )}
+            </Button>
           </SheetHeader>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6">

@@ -1,8 +1,8 @@
 import "react"
 import "@tailwind-deobfuscator/ui/styles/globals-built.css"
 
+import { useTheme } from "@/hooks/use-theme"
 import { Button } from "@tailwind-deobfuscator/ui/components/ui/button"
-import { useTheme } from "@tailwind-deobfuscator/ui/hooks/use-theme"
 import {
   BsGithub,
   ExternalLink,
@@ -12,11 +12,12 @@ import {
 } from "@tailwind-deobfuscator/ui/icons"
 import { Logo } from "@tailwind-deobfuscator/ui/logo"
 
+import "react"
+
 import { sendToContentScript } from "@plasmohq/messaging"
 
 export default function Popup() {
   const { theme, toggleTheme } = useTheme()
-
   return (
     <div className="w-90 bg-background text-foreground overflow-hidden shadow-2xl">
       {/* Header with gradient */}
